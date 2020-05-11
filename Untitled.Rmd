@@ -245,6 +245,535 @@ message ="update"
 print(commit)
 ```
 
+##選取元素
+###選取一個元素
+```{r}
+vectorExample <- c("小明","小鷹","大雄")
+#有多少位置可以選
+length(vectorExample)
+```
+```{r}
+vectorExample[[1]]
+vectorExample[[3]]
+```
+```{r}
+listExample <-
+  list(
+    student ="小明",
+    `學期` =list(
+      `108-1`=list(
+        list(
+          name ="個體經濟學",
+          teacher ="Alice",
+          grade =85
+        )
+      ),
+      `108-2`=list(
+        list(
+          name="總體經濟學",
+          teacher= "Martin",
+          grade =78
+        )
+      )
+    )
+  )
+#有多少位置可以選
+length(listExample) #學生跟學期兩個元素
+```
+```{r}
+listExample[[2]] #[[1]]只有小明一個元素
+```
+```{r}
+library(jsonlite)
+fromJSON("https://data.tainan.gov.tw/dataset/4cd9345a-04bf-4328-a97d-314ff78b4763/resource/afc025fc-1ef4-447c-b785-a680391d0ca1/download/tnsport2.json", simplifyDataFrame = F) -> tainanSportsMap
+
+length(tainanSportsMap)
+```
+```{r}
+tainanSportsMap[[1]]
+```
+
+## 用名字選`$.`
+```{r}
+#有多少名字可以選
+names(listExample)
+```
+```{r}
+listExample$student
+listExample$`學期` # 特殊命名依然要用反頓點呼叫
+```
+```{r}
+str(listExample)
+```
+```{r}
+str(listExample$`學期`)
+```
+其實也可以用[["名字"]]來選，只是名字要以字串「值」的方式來寫，也就是要用引號一對"…", 不用反頓點一對`…`。
+```{r}
+listExample[["student"]]
+listExample$student
+
+listExample[["學期"]] # 小心不是反頓點喔。
+listExample$`學期`
+```
+
+```{r}
+student <-"student"
+listExample[[student]] #沒有加雙引號的寫法
+```
+##選「多個元素」
+###用位置選[c(...)]
+```{r}
+vectorExample
+vectorExample[c(1,3)]
+vectorExample[c(3,2,1,1)] # 產生重新排列效果
+```
+```{r}
+str(listExample[c(1,2)], max.level = 1) #max.level顯示到第一層
+```
+```{r}
+listExample[c("學期","student")]
+```
+##用「要/不要」邏輯向量選[c(T,T,F,...)] 
+
+```{r}
+vectorExample[c(T,F,T)] #要/不要向量無法做到排序
+```
+```{r}
+str(listExample[c(F,T)]) #跟str(listExample[["學期"]])是一樣的結果
+```
+```{r}
+#以下兩個表面都是選取“學期”
+get1 <- listExample[["學期"]]
+get2 <- listExample["學期"]
+
+#[[]]: 拿出某個物件值。listExample[["學期"]]將listExample裡的“學期”物件值拿出來。
+#[]: 留下某個物件值。listExample["學期"]「只留下」listExample裡的“學期”物件值。
+str(get1)
+str(get2) #保有母層（學期）
+```
+##連鎖選取
+```{r}
+numVector <- c(2,3,6,-1,4,2,6)
+select1 <- numVector[c(1,4)]; select1
+select2 <- select1[[1]]; select2 #select1只有兩個元素，並且選取其中的第一個值
+
+# select2相當於
+numVector[c(1,4)][[1]]
+```
+```{r}
+get1 <- listExample[["學期"]] #拿出來適合取「一個」元素
+get1$`108-1` -> get1_layer1
+get1_layer1[[1]] -> get1_layer2
+get1_layer2$teacher
+```
+
+```{r}
+#取出Alice（listExample)
+get2 <- listExample["學期"] #留下來適合取「多個」元素
+get2_layer1 <- get2[[1]]
+get2_layer2 <-get2_layer1[["108-1"]]
+get2_layer3 <- get2_layer2[[1]]
+get2_layer3$teacher
+```
+##list應用
+```{r}
+today <- list(
+  list("台北市",highest_temp =c(highest_temp = 25),lowest_temp = c(lowest_temp = 18)),
+  list("新北市",highest_temp =c(highest_temp = 24),lowest_temp = c(lowest_temp = 15)))
+tomorrow <- list(
+  list("台北市",highest_temp =c(highest_temp = 25),lowest_temp = c(lowest_temp = 18)),
+  list("新北市",highest_temp =c(highest_temp = 24),lowest_temp = c(lowest_temp = 15)))
+
+weather <- list(today,tomorrow)
+
+print(weather)
+```
+
+```{r}
+#取出台北市最高溫
+today[[1]]$highest_temp #此highest_temp是list的命名;結果的highest_temp是atomic vector的命名
+today[[1]][[2]]
+```
 
 
+##新增/替換/刪除元素
+```{r}
+a <- c("1","b","TRUE")
+a
+a[[2]] <- "c" # 元素存在: 替換
+a[[4]] <- "7" # 元素不存在： 增加
+a[c(5,6)] <- c("J", "K")
+a
+```
+
+```{r}
+a[[7]] <- "Johnson"
+a
+
+a <- c(a,"Mary")
+a
+```
+```{r}
+library(lubridate)
+list1 <- 
+  list(
+    list(
+      name="Jack",
+      birthday=ymd("1998-03-21"),
+      status=c(height=177, weight=80)
+    )
+  )
+
+str(list1)
+```
+```{r}
+# 更改日期
+list1[[1]]$birthday <- ymd("1997-03-21")
+
+# 新增資料
+list1[[2]] <- list(
+  name="Mary",
+  birthday=ymd("1998-08-24")
+)
+
+str(list1)
+```
+```{r}
+list1[[1]][["age"]] <- 21
+list1[[2]]["age"] <- list(21)
+
+# 改變「一個」時，使用[[]]比較不會錯;若只用一個[]>>母層若為list，則需用list(...)方式增加、母層若為atomic vector，則用c(...)方式增加。
+str(list1)
+```
+```{r}
+list1[[1]][c("bloodType","registered")] <- list("AB",TRUE)
+
+str(list1)
+```
+```{r}
+#刪除可以使用[- c(數字位置)]
+#只能「一個」中括號（[[.]]不能接受負數值）
+#只能用負數值，不能用元素名稱。
+print(a)
+a[-c(1,3)]
+a[c(-2)]
+
+print(a)
+a[-c(1,3)] -> a # 要回存才算真的刪除
+```
+```{r}
+library(lubridate)
+list1 <- 
+  list(
+    list(
+      name="Jack",
+      birthday=ymd("1998-03-21"),
+      status=c(height=177, weight=80)
+    ),
+    list(
+      name="Mary",
+      birthday=ymd("1998-08-24"),
+      status=c(height=163, weight=45),
+      age=21,
+      bloodType="AB"
+    )
+  )
+str(list1)
+```
+```{r}
+#刪除Jack的status.
+list1[[1]][-3] -> list1[[1]] #存回list1的第一個元素，若沒打[[1]]會讓第二個元素都不見
+str(list1)
+```
+```{r}
+#刪除Mary的status, blookType
+list1[[2]][-c(3,5)] -> list1[[2]]
+str(list1)
+```
+```{r}
+#ist元素要刪除時也可以用[.]<-NULL, [[.]]<-NULL。不需打負號也不須回存
+str(list1)
+list1[[2]][c(1,2)] <- NULL
+str(list1)
+```
+
+```{r}
+class(Pikachu[[4]][[1]])
+```
+##On numeric class
+```{r}
+a <- c(2, 3, 5)
+b <- c(4,-1, 3)
+```
+```{r}
+a+b
+a-b
+a*b
+a/b
+```
+餘數：%%
+
+次方：** 或 ^
+```{r}
+a %% b
+#相當於
+c(2%%4,3%%(-1),5%%3)
+a ** b
+```
+##奇、偶數判斷
+```{r}
+sequenceNums <- c(11, 6, 8, 11, 12, 11, 3, 7, 10, 8)
+print(sequenceNums)
+
+sequenceNums %% 2 # 餘數為1則是奇數，0則是偶數
+```
+```{r}
+5*c(1,3,4)+7
+# 其實是
+c(5)*c(1,3,4)+c(7)
+
+## 對向量5，向量7進行recycle:
+c(5,5,5)*c(1,3,4)+c(7,7,7)
+## Recycle等長後才進行elementwise operation:
+c(5*1+7, 5*3+7, 5*4+7)
+```
+當運算的兩物件內容長度不同時，則將其中較短的一個反複堆疊到可以長得跟另一個一樣高時才來運算，稱為recycling。
+```{r}
+# 狀況一: 堆疊一定倍數剛好一樣長
+c(2,3)/c(-2,-13,10,22)
+c(2,3,2,3)/c(-2,-13,10,22)
+```
+```{r}
+# 狀況二: 倍數堆疊一定會超過，只好截斷
+c(2,3)/c(-2,-13,10)
+c(2,3,2)/c(-2,-13,10)
+```
+Recycling不只用在數值class, 只要向量間的處理要等長度才合理時，recycling通常也會用在其他的class
+```{r}
+paste0(
+  c("我叫"), c("小明","小美")
+)
+#也等於是
+paste0(
+  c("我叫","我叫"), c("小明","小美")
+)
+```
+```{r}
+paste0(
+  c("他叫","我叫"), c("小明","小美","大雄")
+)
+```
+##Relational Operators
+介紹產生「要/不要」向量的常見手法
+```{r}
+example <- list(
+  name=c("小明","小花","小新","美美"),
+  height=c(175,166,170,160),
+  weight=c(77,NA,60,43),
+  birthday=lubridate::ymd(c("1998-03-11","1999-12-22","1995-08-22","2001-10-10")),
+  hobby=c("美食 旅遊","旅遊 時尚","3C 美食","音樂 旅遊"),
+  residence=c("Taipei","New Taipei","Taichung","Kaohsiung"),
+  allowance=factor(c("0-1000","1001-2000","2000+","1001-2000")),
+  bloodType=c("A","B","B","O")
+)
+```
+###比較
+>,<,<=,>=: 分別為大於、小於、小於等於、大於等於
+
+數字比較
+
+時間比較
+
+可排序類別資料比較
+
+####數字比較
+example裡誰的身高大於等於170
+```{r}
+str(example[c("name","height")])
+
+pick_above170 <- example$height >= 170
+example$name[pick_above170]
+
+c(175,166,170,160)>=170
+#只會出現True或是False
+```
+```{r}
+source("https://www.dropbox.com/s/qsrw069n94k61lj/transcript100to103_list.R?dl=1")
+```
+```{r}
+str(transcript100to103)
+```
+分析情境
+```{r}
+# 只要成績大於85的
+pick_above85 <-
+  transcript100to103$`成績` > 85
+# 各學屆2年級人數
+table(transcript100to103$學屆)
+# 各學屆2年級成績大於85人數
+table(transcript100to103$學屆[pick_above85])
+
+#執行出來的結果有兩行，第一行為幾年入學、第二行為符合要求的人數
+```
+####時間比較
+example裡誰1998年(含)以後出生
+```{r}
+print(example[c("name","birthday")])
+
+pick_after98 <- example$birthday >= lubridate::ymd("1998-01-01") #比較的東西須為同class
+example$name[pick_after98]
+```
+美元匯率
+```{r}
+source("https://www.dropbox.com/s/16h6ggua6qtydci/exchangeRate.R?dl=1")
+```
+選1998年1月(含)以後的匯率
+```{r}
+# 只要1998年1月（含）以後的
+library(lubridate)
+pick_after98_01 <-
+  exchangeRate$期間 >= lubridate::ymd("1998-01-01")
+exchangeRate_after98
+```
+選出1998年1月(含)以後的匯率資料
+```{r}
+exchangeRate_after98 <-
+  list(
+    `期間`=exchangeRate$`期間`[pick_after98_01],
+    `幣別`=exchangeRate$`幣別`[pick_after98_01],
+    `匯率`=exchangeRate$`匯率`[pick_after98_01]
+  )
+```
+####可排序類別資料比較
+example裡誰零用錢大於1000
+```{r}
+print(example[c("name","allowance")])
+
+pick_allowanceOver1000 <- example$allowance >= "1001-2000"
+example$name[pick_allowanceOver1000]
+```
+```{r}
+example$allowance <- 
+  ordered(example$allowance)
+example$allowance
+```
+factor資料可進一步分成可排序，與不可排序的，如：
+* 可排序： 以年齡層區分的類別，以所得級距區分的類別等。
+* 不排序： 性別，學系等。
+
+factor的設定在不調整時內定為不可排序資料，如要改成可排序類別資料，以先前已處理好的example$allowance 為例(利用ordered告訴R這個資料為可排序資料（ordered=T），前提是排序大小為你所要求，或可利用level自行設定順序：如下)
+```{r}
+example$allowance <-
+  factor(
+    example$allowance,
+    levels=c("0-1000", "1001-2000", "2000+"),
+    ordered = T # 設定為可排序factor
+  )
+example$allowance
+```
+###相等，屬於
+==: 等於（左元素等於右元素（只有一個=的功效相當於 ->  用來制定元素值）））
+(==要完全一樣)
+!=: 不等於
+example裡誰血型B型
+```{r}
+print(example[c("name","bloodType")])
+
+pick_bloodB <- example$bloodType == "B"
+example$name[pick_bloodB]
+```
+創造可留下偶數的「要/不要」向量pick_evens
+```{r}
+sequenceNums <- c(11, 6, 8, 11, 12, 11, 3, 7, 10, 8)
+pick_evens<-sequenceNums%%2==0
+sequenceNums[pick_evens]
+```
+%in%: 屬於
+左邊元素「一一」檢視是不是屬於右邊元素集合
+```{r}
+x <- c(1,5,8)
+y <- c(5,8)
+
+# x裡的元素值是不是屬於y集合
+x %in% y
+```
+example裡誰來自大台北
+```{r}
+print(example[c("name","residence")])
+
+set_TaipeiMetro <- c("Taipei","New Taipei")
+pick_fromTaipeiMetro <- example$residence %in% set_TaipeiMetro
+example$name[pick_fromTaipeiMetro]
+```
+選出來自法商學院的「要/不要」向量
+```{r}
+set_LawBussiness<-c("法學院","商學院")
+pick_LawBussiness<-transcript100to103$學院 %in% set_LawBussiness
+```
+unique 此函數可以顯示出各元素（但不重複）
+
+###Negation
+```{r}
+pick_not_fromTaipeiMetro <- ! pick_fromTaipeiMetro
+# 或
+pick_not_fromTaipeiMetro <- !(example$residence %in% set_TaipeiMetro) # (..) 裡面會先運算完才做外面!的處理
+```
+###資料狀態
+is.na: 有缺失
+有時資料有缺失，在R裡會記成NA(即not available)如下例(NA不需記成字串也就是不需加雙引號)
+```{r}
+x2 <- c(1,NA,10)
+y2 <- c(-1,NA,20)
+
+x3 <- c(NA,"小花")
+y3 <- c(NA,"小華")
+```
+
+```{r}
+is.na(x2) #is.an函數挑出元素是否為na
+```
+example裡誰沒有體重資料
+```{r}
+print(example[c("name","weight")])
+
+pick_na <- is.na(example$weight)
+example$name[pick_na]
+```
+head 此函數只會出現前六筆資料
+###字元偵測
+利用stringr::str_detect
+example裡誰喜歡美食
+```{r}
+print(example[c("name","hobby")])
+
+pick_loveFood <- stringr::str_detect(example$hobby,"美食")
+example$name[pick_loveFood]
+```
+```{r}
+jsonlite::fromJSON("https://data.ntpc.gov.tw/od/data/api/EDC3AD26-8AE7-4916-A00B-BC6048D19BF8?$format=json") ->
+  garbageRoutes
+```
+
+```{r}
+#  1 用typeof()函數查詢電腦實質上如何看待garbageRoutes。
+typeof(garbageRoutes)  
+#  2 用class()函數查詢電腦把它能進行的操作運算歸屬於哪一類型。
+class(garbageRoutes)
+```
+###閱讀函數說明
+```{r}
+fruit <- c("apple", "banana", "pear", "pinapple")
+stringr::str_detect(fruit, "a")
+stringr::str_detect(fruit, "^a") #以a字元開頭，^為字元規律描述"starting with"
+stringr::str_detect(fruit, "a$")#以a字元結尾，＄"ending with" 
+stringr::str_detect(fruit, "b")
+stringr::str_detect(fruit, "[aeiou]")
+
+# Also vectorised over pattern
+stringr::str_detect("aecfg", letters)
+
+# Returns TRUE if the pattern do NOT match
+stringr::str_detect(fruit, "^p", negate = TRUE) 
+```
 
