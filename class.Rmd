@@ -999,12 +999,3 @@ print(twDate_reformat)
 lubridate::ymd(twDate_reformat)
 ```
 
-###字元模版
-[:graph:] 包山包海，還包中文字元。
-[\u4E00-\u9FFF] 代表所有中日韓文字字元
-```{r}
-str_extract_all(
-  "我的名字8293叫17380小abce明",
-  "[\u4E00-\u9FFF]+")
-```
-
