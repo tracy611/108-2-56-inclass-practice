@@ -1229,7 +1229,7 @@ middleLevels <-
 newLevels <- c("4", middleLevels, "65+", "65+")
 
 levels(covid19$年齡層) <- newLevels
-covid19$年齡層
+covid19$`年齡層`
 ```
 
 ###levels擴充
@@ -1268,5 +1268,21 @@ c(char1, char2)
 factor1 <- factor(c("好", "壞", "壞"))
 factor2 <- factor(c("壞", "好", "好"))
 c(factor1, factor2)
+```
+
+##on list
+###每個元素相同運算
+```{r}
+pick_小新 <- example$name == "小新"
+data_selected <- 
+  list(
+    name=example$name[pick_小新],
+    weight=example$weight[pick_小新],
+    height=example$height[pick_小新],
+    hobby=example$hobby[pick_小新],
+    residence=example$residence[pick_小新],
+    allowance=example$allowance[pick_小新],
+    bloodType=example$bloodType[pick_小新]
+  )
 ```
 
