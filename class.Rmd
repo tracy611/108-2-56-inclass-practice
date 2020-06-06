@@ -1679,3 +1679,8 @@ codetools::findGlobals(myDemand)
 # myDemand對Global environment的要求多了intercept及slope
 ```
 
+```{r}
+# 移除global environment裡的intercept及slope
+rm(intercept, slope)
+```
+
