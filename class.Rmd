@@ -1819,3 +1819,106 @@ askSilly_weather2("新北市", today())
 askSilly_weather2("臺北市", today())
 ```
 ###if else
+```{r}
+if(condition){
+  body for TRUE condition
+} else {
+  body for FALSE condition
+}
+```
+
+```{r}
+# n 為偶數
+n <- 54
+fvalue <- n/2
+
+# n 為奇數
+n <- 33
+fvalue <- -(n + 1)/2
+```
+Condition設計：n「是/否」為偶數？
+```{r}
+(n%%2) == 1  # 表示「奇數」; 或...
+
+as.logical(n%%2)  # 只有0會變F，其他數值都是T
+```
+if…else…組合
+```{r}
+n <- 54
+if (as.logical(n%%2)) {
+    fvalue <- -(n + 1)/2
+} else {
+    fvalue <- n/2
+}
+```
+
+```{r}
+myFun <- function(n) {
+    if (as.logical(n%%2)) {
+        fvalue <- -(n + 1)/2
+    } else {
+        fvalue <- n/2
+    }
+    return(fvalue)
+}
+
+myFun(54)
+myFun(33)
+```
+```{r}
+examSubmissionTime <- jsonlite::fromJSON("https://www.dropbox.com/s/d14j5hp3i5ps657/examSubmissionTimes.json?dl=1")
+
+
+head(examSubmissionTime$section)
+head(examSubmissionTime$time)
+```
+只有一個交卷時間
+```{r}
+i <- 1
+student_i_section <- examSubmissionTime$section[[i]]
+student_i_time <- examSubmissionTime$time[[i]]
+
+deadline <- lubridate::ymd_hms("2020-05-27 15:00:00", tz = "Asia/Taipei")  # 
+
+howEarly <- deadline - lubridate::ymd_hms(student_i_time, tz = "Asia/Taipei")
+print(howEarly)
+```
+有兩個交卷時間
+```{r}
+student_i_section <- examSubmissionTime$section[[i]]
+student_i_time <- examSubmissionTime$time[[i]]
+```
+===流程分歧點開始===
+56節的時間
+```{r}
+deadline <- lubridate::ymd_hms("2020-05-27 15:00:00", tz="Asia/Taipei")
+```
+78節的時間
+```{r}
+deadline <- lubridate::ymd_hms("2020-05-27 17:00:00", tz="Asia/Taipei")
+```
+===流程分歧點結束===
+```{r}
+howEarly <- deadline - lubridate::ymd_hms(student_i_time, tz = "Asia/Taipei")
+print(howEarly)
+```
+使用if…else控制情境分歧
+Condition設計：
+```{r}
+student_i_section == "56"
+```
+if…else…組合：
+```{r}
+i <- 1
+student_i_section <- examSubmissionTime$section[[i]]
+student_i_time <- examSubmissionTime$time[[i]]
+
+if (student_i_section == "56") {
+    deadline <- lubridate::ymd_hms("2020-05-27 15:00:00", tz = "Asia/Taipei")
+} else {
+    deadline <- lubridate::ymd_hms("2020-05-27 17:00:00", tz = "Asia/Taipei")
+}
+
+howEarly <- deadline - lubridate::ymd_hms(student_i_time, tz = "Asia/Taipei")
+print(howEarly)
+```
