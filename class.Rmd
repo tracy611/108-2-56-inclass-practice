@@ -1704,3 +1704,79 @@ if (str_detect(studentId, "^[43](1[01][0-9]|9[0-9])[0-9]{5}$", negate = T)  # co
 }
 ```
 
+```{r}
+if (!require(lubridate)) {
+    # condition: 是否「沒安裝lubridate」？
+    install.packages("lubridate")
+}
+lubridate::ymd_hms("2020-07-01 13:00:00 GMT")
+```
+```{r}
+twDate <-  c("民國108年12月5日","民國98年10月5日")
+
+library(stringr)
+# 準備regex: 
+## 取出：「前有」民國，「後有」年的「數字」「們」
+## "(?<={A_regex}){target_regex}(?={B_regex})"
+
+target_regex <- "[0-9]+"
+A_regex <- "民國"
+B_regex <- "年"
+
+regex_pattern <- glue::glue(
+  "(?<={A_regex}){target_regex}(?={B_regex})"
+  )
+
+print(regex_pattern)
+
+## 如果同學已經很熟就可以直接寫
+regex_pattern <-
+  "(?<=民國)[0-9]+(?=年)"
+
+# 取出民國年，計算西元年
+year <- 
+  str_extract(
+    twDate,
+    regex_pattern)
+westernYear <- as.integer(year)+1911
+
+# 替換民國xx年的xx成西元年數字
+str_replace(
+  twDate,
+  regex_pattern,  # 要換掉的文字
+  as.character(westernYear) # 要替換的內容
+) -> twDate_reformat
+print(twDate_reformat)
+
+
+lubridate::ymd(twDate_reformat)
+```
+上題的較簡單解法 同時創造出一個函數可重複使用
+```{r}
+convert_TaiwanDate2WesternDate <- function(twDate){
+  library(stringr)
+  regex_pattern <-
+    "(?<=民國)[0-9]+(?=年)"
+  
+  # 取出民國年，計算西元年
+  year <- 
+    str_extract(
+      twDate,
+      regex_pattern)
+  westernYear <- as.integer(year)+1911
+  
+  # 替換民國xx年的xx成西元年數字
+  str_replace(
+    twDate,
+    regex_pattern,  # 要換掉的文字
+    as.character(westernYear) # 要替換的內容
+  ) -> twDate_reformat
+  
+  lubridate::ymd(twDate_reformat) -> westernDate
+  return(westernDate)
+}
+
+twDate <-  c("民國108年12月5日","民國98年10月5日")
+convert_TaiwanDate2WesternDate(twDate)
+```
+
