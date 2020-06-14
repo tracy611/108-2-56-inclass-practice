@@ -1777,6 +1777,15 @@ convert_TaiwanDate2WesternDate <- function(twDate){
 }
 
 twDate <-  c("民國108年12月5日","民國98年10月5日")
-convert_TaiwanDate2WesternDate(twDate)
+convert_TaiwanDate2WesternDate(twDate) 
+```
+###不重覆下載
+```{r}
+# 檢視步驟耗時elapse time
+system.time(weather_next36hours <- jsonlite::fromJSON("https://opendata.cwb.gov.tw/fileapi/v1/opendataapi/F-C0032-001?Authorization=rdec-key-123-45678-011121314&format=JSON"))
+```
+
+```{r}
+
 ```
 
