@@ -1849,7 +1849,9 @@ if (as.logical(n%%2)) {
     fvalue <- -(n + 1)/2
 } else {
     fvalue <- n/2
-}
+} ->hfiuh
+hfiuh
+as.logical(hfiuh)
 ```
 
 ```{r}
