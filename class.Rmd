@@ -2223,3 +2223,84 @@ if(!is.na(grade_i)){
 }
 ```
 
+```{r}
+jsonlite::fromJSON("https://www.dropbox.com/s/7myzzdnoor21hye/courseStructure2.json?dl=1") -> courseStructure
+```
+笨蛋做法
+```{r}
+entranceYear <- 100
+major <- "經濟系"
+allGrades <- paste0(major, 1:4)
+academicYears <- entranceYear+0:3
+
+# 100學年 1年級
+acadYear_i <- academicYears[[1]]
+grade_i <- allGrades[[1]]
+pick <-
+  (courseStructure$學年==acadYear_i 
+    &
+    str_detect(courseStructure$應修系級, grade_i))
+unique(courseStructure$科目名稱[pick])
+
+# 101學年 2年級
+acadYear_i <- academicYears[[2]]
+grade_i <- allGrades[[2]]
+pick <-
+  (courseStructure$學年==acadYear_i 
+    &
+    str_detect(courseStructure$應修系級, grade_i))
+unique(courseStructure$科目名稱[pick])
+
+# 102學年 3年級
+acadYear_i <- academicYears[[3]]
+grade_i <- allGrades[[3]]
+pick <-
+  (courseStructure$學年==acadYear_i 
+    &
+    str_detect(courseStructure$應修系級, grade_i))
+unique(courseStructure$科目名稱[pick])
+
+# 103學年 4年級
+acadYear_i <- academicYears[[4]]
+grade_i <- allGrades[[4]]
+pick <-
+  (courseStructure$學年==acadYear_i 
+    &
+    str_detect(courseStructure$應修系級, grade_i))
+unique(courseStructure$科目名稱[pick])
+```
+
+迴圈
+```{r}
+pick <-
+  (courseStructure$學年==acadYear_i 
+    &
+    str_detect(courseStructure$應修系級, grade_i))
+unique(courseStructure$科目名稱[pick])
+```
+
+```{r}
+get_courses <- function(acadYear_i, grade_i, courseStructure){
+  pick <-
+  (courseStructure$學年==acadYear_i 
+    &
+    str_detect(courseStructure$應修系級, grade_i))
+  
+  return(
+    unique(courseStructure$科目名稱[pick])
+  )
+}
+```
+
+```{r}
+1:4 %>%
+  map(~{get_courses(academicYears[[.]], allGrades[[.]], courseStructure)})
+```
+### for loop
+```{r}
+output <- vector("{type}", length={len})
+for(.x in {sequence}){
+  {body}
+}
+```
+
