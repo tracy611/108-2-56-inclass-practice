@@ -2427,7 +2427,8 @@ while(continueCondition){
 ```{r}
 sum <- 0
 count <- 0 # 計數器
-while(sum<5){
+max_count <- 500
+while(sum<5&& count <= max_count){
   count <- count+1 # 計數器+1
   newToss <- sample(c("正","反"), 1, replace=T)
   if(newToss == "正"){
