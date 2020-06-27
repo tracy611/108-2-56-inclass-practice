@@ -2161,4 +2161,4 @@ if(is.factor(myAnswer) && all(myAnswer==correctAnswer)){
 }-> myGrade
 myGrade
 ```
-
+##Iteration
