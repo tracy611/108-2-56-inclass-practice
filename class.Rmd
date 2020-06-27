@@ -2006,3 +2006,52 @@ if (grade >= 90) {
 }
 ```
 ###switch
+condition改成用文字描述，即conditionExpression。
+
+不同conditionExpression與對應body內容改成使用一對對的:
+
+"conditionExpression文字"={body 內容} 的name=value pair
+```{r}
+n<- 540
+
+conditionExpression_outcome=
+  ifelse(n %% 2==0, "even", "odd") 
+
+switch(
+  conditionExpression_outcome,
+  "even"={fvalue <- n/2}, # 偶數
+  "odd"=fvalue <- -(n+1)/2, # 奇數；只有一行指令可省略{}
+  warning("n要整數喔")  
+)
+
+print(fvalue)
+```
+ifelse(test, yes, no)是超級好用/常用的函數：
+
+test: class logical. 測試條件的結果
+
+yes: 結果為T 時你希望的回傳值
+
+no: 結果為F 時你希望的回傳值
+```{r}
+grades <- c(52, 77, 59, 88, 90)
+
+ifelse(grades >= 60, "及格", "不及格")
+```
+```{r}
+myFun <- function(x,y){
+  return(x**y+15)
+}
+
+# 等同於
+myFun2 <- function(x,y){
+  x**y+15
+}
+
+myFun(5,3) -> outcome
+myFun2(5,3) -> outcome2
+print(outcome)
+print(outcome2)
+```
+cut：連續轉類別
+
